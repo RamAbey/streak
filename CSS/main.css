@@ -20,6 +20,82 @@ body {
     font-family: 'Montserrat', sans-serif;
     background: var(--primary-color);
 }
+
+/* Login Page */
+.login-wrapper {
+    background-color: rgb(255, 255, 255,0.7);
+    width: 50vw;
+    height: 60vh;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    margin: auto;
+    padding: 1rem;
+}
+
+.login-wrapper h3 {
+    text-align: center;
+    font-size: 24px;
+    margin-bottom: 2rem;
+}
+.login-wrapper .error-msg {
+    display: none;
+    margin-top: 1rem;
+    font-weight: bold;
+    color: white;
+    background: rgba(255, 26, 26, 0.575);
+    padding: 1rem;
+    border-radius: 15px;
+}
+.login-wrapper .input-wrapper {
+    margin-top: 1rem;
+}
+
+.login-wrapper label {
+    font-weight: bold;
+}
+
+.login-wrapper input {
+    display: block;
+    position: relative;
+    padding: 1rem 1rem 0.2rem 0.2rem;
+    width: 100%;
+    margin: 0 auto;
+    background: none;
+    outline: none;
+    border: none;
+    border-bottom: 1px black solid;
+    transition: all 0.3s;
+}
+
+.login-wrapper input:focus{
+    border-bottom: 3px black solid;
+    
+}
+.login-wrapper input#email:valid{
+    border-bottom: 3px green solid;
+}
+
+.login-wrapper .btn-row-wrapper {
+    display: flex;
+    align-items: center;
+}
+
+.login-wrapper .btn {
+    background: teal;
+    color: white;
+    padding: 0.5rem 1rem;
+    margin: 1rem 0.5rem;
+    text-align: center;
+    width: 50%;
+    font-weight: bold;
+    display: inline-block;
+    cursor: pointer;
+}
+
+/* Main Page */
 header {
     text-align: center;
     padding: 2rem 0;
@@ -64,14 +140,26 @@ header h1 {
     color: var(--direction-color);
 }
 
+.pick-num #error {
+    display: none;
+    margin-top: 1rem;
+    margin-bottom: -1rem;
+    font-weight: bold;
+    color: white;
+    background: rgba(255, 26, 26, 0.808);
+    padding: 1rem;
+    border-radius: 15px;
+}
+
 .num-wrapper {
     display: flex;
+    justify-content: center;
 }
 
 .num-wrapper div {
     background: var(--secondary-color);
     padding: 1rem;
-    margin: 1rem 1rem;
+    margin: 2rem 1rem;
     border-radius: 15px;
 }
 .num-wrapper input {
@@ -80,13 +168,20 @@ header h1 {
     font-size: 2rem;
     font-weight: 800;
     color: var(--input-color);
-    width: 20%;
     outline: none;
     text-align: center;
+    width: 100%;
 }
+
 .num-wrapper input::placeholder {
     color: var(--text-color);
     opacity: 75%;
+}
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
 }
 
 .pick-num .submit-btn {
@@ -98,12 +193,12 @@ header h1 {
     padding: 1rem;
     border-radius: 15px;
     width: 25%; /* Update */
-    margin: 1rem auto;
+    margin: 2rem auto;
 }
 
 .submit-btn:hover {
     background: #8aff8a;
-    box-shadow: 
+    box-shadow: 2px 2px 5px black;
 }
 
 .standings {
@@ -142,7 +237,7 @@ header h1 {
 /* Responsive Media Queries */
 @media (max-width: 720px) {
     body {
-        background-color: ;
+        background-color: blue;
     }
     .container {
         width: 75%;
