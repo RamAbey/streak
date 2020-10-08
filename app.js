@@ -14,9 +14,10 @@ var firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 firebase.analytics();
 const auth = firebase.auth();
+const db = firebase.firestore()
 
 auth.onAuthStateChanged(user =>{
-    console.log("user info", user);
+    // console.log("user info", user);
     if(user) {
         // Handle user information
     } else {
@@ -51,12 +52,12 @@ function verifyNumber(number) {
     number = parseInt(number, 10)
     if (number) {
         if (number > 0 && number < 21) {
-            console.log(`Your number is ${number}`)
+            // console.log(`Your number is ${number}`)
             document.getElementById('error').style.display = 'none'
-            return true
+            return number
         } else {
             showError()
-            console.log("Not between 1 and 20.")
+            // console.log("Not between 1 and 20.")
             return false
         }
     } else {
@@ -67,4 +68,32 @@ function verifyNumber(number) {
 
 function showError() {
     document.getElementById('error').style.display='block'
+}
+
+document.querySelector('.submit-btn').addEventListener('click', submitNums)
+
+function submitNums() {
+    if (verifyNumber(num1.value)) {
+        num1.value = verifyNumber(num1.value)
+    } 
+    else {num1.value = ''; return false}
+    if (verifyNumber(num2.value)) {
+        num2.value = verifyNumber(num2.value)
+    } 
+    else {num2.value = ''; return false}
+    if (verifyNumber(num3.value)) {
+        num3.value = verifyNumber(num3.value)
+    } 
+    else {num3.value = ''; return false}
+    db.collection("users").doc(firebase.auth().currentUser.uid).set({
+        num1: num1.value,
+        num2: num2.value,
+        num3: num3.value
+    })
+    .then(function() {
+        console.log("Document successfully written!");
+    })
+    .catch(function(error) {
+        console.log("Error writing document: ", error)
+    })
 }

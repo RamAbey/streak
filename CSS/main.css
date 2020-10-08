@@ -124,6 +124,7 @@ header .sign-out-btn {
     right: 100px;
     top: 25px;
     border-radius: 10px;
+    transition: all 0.2s;
 }
 
 .info-btn{
@@ -177,6 +178,7 @@ header .sign-out-btn {
     padding: 1rem;
     margin: 2rem 1rem;
     border-radius: 15px;
+    transition: all 0.2s;
 }
 .num-wrapper input {
     background: var(--secondary-color);
@@ -210,6 +212,7 @@ input::-webkit-inner-spin-button {
     border-radius: 15px;
     width: 25%; /* Update */
     margin: 2rem auto;
+    transition: all 0.2s;
 }
 
 .submit-btn:hover {
@@ -252,13 +255,22 @@ input::-webkit-inner-spin-button {
 
 /* Responsive Media Queries */
 @media (max-width: 720px) {
-    body {
-        background-color: blue;
+    header .sign-out-btn {
+        transform: rotateZ(90deg);
+        right: 5px;
+        top: 120px;
     }
     .container {
-        width: 75%;
+        width: 65%;
     }
     .num-wrapper {
         flex-direction: column;
+    }
+    .num-wrapper div {
+        margin: 15px;
+    }
+    .pick-num .submit-btn {
+        width: 50%;
+        margin: 10px auto 30px auto;
     }
 }
