@@ -1,7 +1,3 @@
-// TODO: Cache user numbers to avoid several calls
-// TODO: Use LocalStorage
-// TODO: Change updateScores to use yesterday's date
-
 // Your web app's Firebase configuration
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
 var firebaseConfig = {
@@ -23,7 +19,11 @@ const db = firebase.firestore()
 auth.onAuthStateChanged(user =>{
     // console.log("user info", user);
     if(user) {
-        // Handle user information
+        // countValues()
+        updateScores()
+        // updateRanking()
+        // renderTable()
+        // renderScoreBoard()
     } else {
         window.location = 'login.html'
     }
@@ -89,7 +89,7 @@ function submitNums() {
         num3.value = verifyNumber(num3.value)
     } 
     else {num3.value = ''; return false}
-    db.collection("users").doc(firebase.auth().currentUser.uid).set({
+    db.collection("users").doc(firebase.auth().currentUser.uid).update({
         numbers: [parseInt(num1.value, 10),parseInt(num2.value, 10),parseInt(num3.value,10)]
     })
     .then(function() {
@@ -115,18 +115,18 @@ function countValues() {
         for (var i = 0; i < 21; i++){
             numCount[i] ? pointsGiven.push(i/numCount[i]) : pointsGiven.push(0)
         }
-        console.log(pointsGiven)
+        // console.log(pointsGiven)
         db.collection("totals").doc(new Date().toJSON().slice(0,10)).set({
             totals: numCount,
             points: pointsGiven
         })
-        console.log(numCount)
+        // console.log(numCount)
     })
 }
 function updateScores() {
     db.collection("totals").doc(new Date().toJSON().slice(0,10)).get().then(function(doc) {
         if (doc.exists) {
-            console.log("Document data:", doc.data());
+            // console.log("Document data:", doc.data());
             return doc.data().points
         } else {
             console.log("Document doesn't exist");
@@ -137,6 +137,7 @@ function updateScores() {
             querySnapshot.forEach(function(doc) {
                 points_to_add = points[doc.data().numbers[0]] + points[doc.data().numbers[1]] + points[doc.data().numbers[2]]
                 db.collection("users").doc(doc.id).update({
+                    numbers: [0,0,0],
                     score: firebase.firestore.FieldValue.increment(points_to_add)
                 })
             })
@@ -147,17 +148,33 @@ function updateScores() {
     });
 }
 function updateRanking() {
-    db.collection("users").orderBy("score").limit(5).get()
+    db.collection("users").orderBy("score","desc").limit(5).get()
     .then(function(querySnapshot) {
+        rank = 0
         querySnapshot.forEach(function(doc) {
-            // doc.data() is never undefined for query doc snapshots
-            console.log(doc.id, " => ", doc.data());
+            rank++
+            db.collection("scores").doc("ranking").update({
+                [rank]: {score: doc.data().score, uid: doc.id, name: doc.data().name},
+            })
         });
     })
     .catch(function(error) {
         console.log("Error getting documents: ", error);
     })
 }
-updateRanking()
-// updateScores()
-// countValues()
+function renderTable() {
+    var s = ""
+    db.collection("scores").doc("ranking").get().then(function(doc) {
+        for (player in doc.data()) {
+            if (player && doc.data()[player]){
+                s += `<tr><td>${player}</td><td>${doc.data()[player].name}</td><td>${doc.data()[player].score}</td></tr>`
+                console.log(player, doc.data()[player])
+            }
+        }
+        return s
+    }).then(s => document.getElementById('rank-table-body').innerHTML = s)
+}
+function renderScoreBoard() {
+    db.collection("users").doc(firebase.auth().currentUser.uid).get()
+    .then((doc) => {document.getElementById('total-pts').innerHTML=`<span class="pos-change">${doc.data().score}</span>`})
+}

@@ -24,7 +24,7 @@ body {
 /* Login Page */
 .login-wrapper {
     background-color: rgb(255, 255, 255,0.7);
-    width: 50vw;
+    width: 60vw;
     height: 60vh;
     position: absolute;
     top: 0;
@@ -304,7 +304,7 @@ input::-webkit-inner-spin-button {
     }
     .login-wrapper {
         width: 70%;
-        height: 300px;
+        height: 40vh;
     }
 }
 @media (max-width: 620px) {
