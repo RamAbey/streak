@@ -1,22 +1,13 @@
-daily_totals = {
-    '1': 10, 
-    '2': 11,
-    '3': 5,
-    '4': 10, 
-    '5': 11,
-    '6': 5,
-    '7': 7, 
-    '8': 3,
-    '9': 1,
-    '10': 10, 
-    '11': 7,
-    '12': 3, 
-    '13': 4,
-    '14': 6, 
-    '15': 15,
-    '16': 10, 
-    '17': 4,
-    '18': 2,
-    '19': 1,
-    '20': 6
-}
+const functions = require('firebase-functions')
+const admin = require('firebase-admin')
+admin.initializeApp();
+
+exports.countValues = functions.firestore.collection("users").get()
+    .then(function(querySnapshot) {
+        numCount = new Array(21).fill(0)
+        querySnapshot.forEach(function(doc) {
+            numCount[doc.data().numbers[0]] ++
+            numCount[doc.data().numbers[1]] ++
+            numCount[doc.data().numbers[2]] ++
+        })
+    })

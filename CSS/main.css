@@ -58,6 +58,7 @@ body {
 }
 
 .login-wrapper input {
+    font-size: 1em;
     display: block;
     position: relative;
     padding: 1rem 1rem 0.2rem 0.2rem;
@@ -178,7 +179,8 @@ header .sign-out-btn {
     padding: 1rem;
     margin: 2rem 1rem;
     border-radius: 15px;
-    transition: all 0.2s;
+    transition: all 0.6s ease;
+
 }
 .num-wrapper input {
     background: var(--secondary-color);
@@ -212,7 +214,7 @@ input::-webkit-inner-spin-button {
     border-radius: 15px;
     width: 25%; /* Update */
     margin: 2rem auto;
-    transition: all 0.2s;
+    transition: all 0.3s;
 }
 
 .submit-btn:hover {
@@ -224,9 +226,10 @@ input::-webkit-inner-spin-button {
     display: flex;
     background: var(--text-color);
     justify-content: space-evenly;
-    border-radius: 15px;
+    border-radius: 10px;
     padding: 1rem;
     height: 100px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.425);
 }
 
 .pos-change::before {
@@ -247,21 +250,47 @@ input::-webkit-inner-spin-button {
 }
 
 .seperator-line{
-    border-left: 4px solid var(--tertiary-color);
+    border-left: 4px solid gray;
     height: 90%;
     left: 50%;
     margin-left: -2px;  
 }
 
+.rank-table {
+    border-collapse: collapse;
+    margin: 25px 0;
+    width: 100%; 
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.425);
+}
+.rank-table thead tr {
+    background-color: var(--secondary-color);
+    color: white;
+    text-align: left;
+    font-weight: bold;
+}
+.rank-table th,
+.rank-table td {
+    padding: 12px 15px;
+}
+.rank-table tbody tr {
+    border-bottom: 1px solid #dddddd;
+    background: white;
+    transition: all 0.3s;
+}
+.rank-table tbody tr:last-of-type {
+    font-weight: bold;
+    color: var(--secondary-color);
+    border-top: 3px solid #009879;
+    background: #e9e9e9;
+}
+
+
 /* Responsive Media Queries */
 @media (max-width: 720px) {
-    header .sign-out-btn {
-        transform: rotateZ(90deg);
-        right: 5px;
-        top: 120px;
-    }
     .container {
-        width: 65%;
+        width: 75%;
     }
     .num-wrapper {
         flex-direction: column;
@@ -272,5 +301,16 @@ input::-webkit-inner-spin-button {
     .pick-num .submit-btn {
         width: 50%;
         margin: 10px auto 30px auto;
+    }
+    .login-wrapper {
+        width: 70%;
+        height: 300px;
+    }
+}
+@media (max-width: 620px) {
+    header .sign-out-btn {
+        transform: rotateZ(90deg);
+        right: 5px;
+        top: 120px;
     }
 }
