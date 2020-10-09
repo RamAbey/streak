@@ -304,7 +304,7 @@ input::-webkit-inner-spin-button {
     }
     .login-wrapper {
         width: 70%;
-        height: 40vh;
+        height: 60vh;
     }
 }
 @media (max-width: 620px) {
