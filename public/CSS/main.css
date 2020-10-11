@@ -191,6 +191,10 @@ header .sign-out-btn {
     outline: none;
     text-align: center;
     width: 100%;
+    transition: opacity 0.3s;
+}
+.num-wrapper input:read-only {
+    opacity: 50%;
 }
 
 .num-wrapper input::placeholder {
@@ -213,7 +217,7 @@ input::-webkit-inner-spin-button {
     padding: 1rem;
     border-radius: 15px;
     width: 25%; /* Update */
-    margin: 2rem auto;
+    margin: 0rem auto 3rem auto;
     transition: all 0.3s;
 }
 
@@ -304,7 +308,7 @@ input::-webkit-inner-spin-button {
     }
     .login-wrapper {
         width: 70%;
-        height: 60vh;
+        min-height: 500px;
     }
 }
 @media (max-width: 620px) {
@@ -312,5 +316,9 @@ input::-webkit-inner-spin-button {
         transform: rotateZ(90deg);
         right: 5px;
         top: 120px;
+    }
+    .pick-num h2 {
+        width: 80%;
+        margin: 0 auto;
     }
 }

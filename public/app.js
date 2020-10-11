@@ -20,10 +20,15 @@ auth.onAuthStateChanged(user =>{
     // console.log("user info", user);
     if(user) {
         // countValues()
-        updateScores()
+        // updateScores()
         // updateRanking()
-        // renderTable()
-        // renderScoreBoard()
+        if (new Date().toJSON().slice(0,10) == localStorage.getItem('date')){
+            num1.readOnly = true;
+            num2.readOnly = true;
+            num3.readOnly = true;
+        }
+        renderTable()
+        renderScoreBoard()
     } else {
         window.location = 'login.html'
     }
@@ -51,7 +56,16 @@ num2.addEventListener('input', (e) => {
 num3.addEventListener('input', (e) => {
     verifyNumber(e.target.value)
 })
+document.querySelector('.submit-btn').addEventListener('click', submitNums)
 
+function showError(errorMsg = "Error: Please enter valid numbers.") {
+    document.getElementById('error').innerText = errorMsg
+    document.getElementById('error').style.display='block'
+    setTimeout(hideError, 3000)
+}
+function hideError() {
+    document.getElementById('error').style.display="none"
+}
 function verifyNumber(number) {
     number = parseInt(number, 10)
     if (number) {
@@ -69,37 +83,40 @@ function verifyNumber(number) {
         return false
     }
 }
-
-function showError() {
-    document.getElementById('error').style.display='block'
-}
-
-document.querySelector('.submit-btn').addEventListener('click', submitNums)
-
 function submitNums() {
-    if (verifyNumber(num1.value)) {
-        num1.value = verifyNumber(num1.value)
-    } 
-    else {num1.value = ''; return false}
-    if (verifyNumber(num2.value)) {
-        num2.value = verifyNumber(num2.value)
-    } 
-    else {num2.value = ''; return false}
-    if (verifyNumber(num3.value)) {
-        num3.value = verifyNumber(num3.value)
-    } 
-    else {num3.value = ''; return false}
-    db.collection("users").doc(firebase.auth().currentUser.uid).update({
-        numbers: [parseInt(num1.value, 10),parseInt(num2.value, 10),parseInt(num3.value,10)]
-    })
-    .then(function() {
-        console.log("Document successfully written!");
-    })
-    .catch(function(error) {
-        console.log("Error writing document: ", error)
-    })
+    if (new Date().toJSON().slice(0,10) == localStorage.getItem('date')){
+        showError("You can only enter numbers once a day.")
+    } else {
+        if (verifyNumber(num1.value)) {
+            num1.value = verifyNumber(num1.value)
+        } 
+        else {num1.value = ''; return false}
+        if (verifyNumber(num2.value)) {
+            num2.value = verifyNumber(num2.value)
+        } 
+        else {num2.value = ''; return false}
+        if (verifyNumber(num3.value)) {
+            num3.value = verifyNumber(num3.value)
+        } 
+        else {num3.value = ''; return false}
+        db.collection("users").doc(firebase.auth().currentUser.uid).update({
+            numbers: [parseInt(num1.value, 10),parseInt(num2.value, 10),parseInt(num3.value,10)]
+        })
+        .then(function() {
+            console.log("Document successfully written!");
+            localStorage.setItem("numbers", [parseInt(num1.value, 10),parseInt(num2.value, 10),parseInt(num3.value,10)])
+            localStorage.setItem("date", new Date().toJSON().slice(0,10))
+            num1.readOnly = true;
+            num2.readOnly = true;
+            num3.readOnly = true;
+        })
+        .catch(function(error) {
+            console.log("Error writing document: ", error)
+        })
+    }
 }
 
+// Cloud Functions
 function countValues() {
     numCount = new Array(21).fill(0)
     db.collection("users").get().then(function(querySnapshot) {
@@ -162,6 +179,8 @@ function updateRanking() {
         console.log("Error getting documents: ", error);
     })
 }
+
+// User Functions
 function renderTable() {
     var s = ""
     db.collection("scores").doc("ranking").get().then(function(doc) {
@@ -176,5 +195,8 @@ function renderTable() {
 }
 function renderScoreBoard() {
     db.collection("users").doc(firebase.auth().currentUser.uid).get()
-    .then((doc) => {document.getElementById('total-pts').innerHTML=`<span class="pos-change">${doc.data().score}</span>`})
+    .then((doc) => {
+        document.getElementById('total-pts').innerHTML=`<span class="pos-change">${doc.data().score}</span>`;
+        document.getElementById('rank-table-body').innerHTML += `<tr><td>You</td><td>${doc.data().name}</td><td>${doc.data().score}</td></tr>`
+    })
 }

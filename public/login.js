@@ -36,6 +36,8 @@ signUpBtn.addEventListener('click', (e) => {
         console.log("Successfully signed up", Credential.user);
         db.collection("users").doc(firebase.auth().currentUser.uid).set({
             name: username,
+            numbers: [0,0,0],
+            score: 0
         }).then(x => {window.location = 'index.html'})
     }).catch(error => {
         // console.log("error",error);
