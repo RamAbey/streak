@@ -15,20 +15,26 @@ firebase.initializeApp(firebaseConfig);
 firebase.analytics();
 const auth = firebase.auth();
 const db = firebase.firestore()
-
+let lockedNumbers = false;
 auth.onAuthStateChanged(user =>{
     // console.log("user info", user);
     if(user) {
-        // countValues()
-        // updateScores()
-        // updateRanking()
-        if (new Date().toJSON().slice(0,10) == localStorage.getItem('date')){
-            num1.readOnly = true;
-            num2.readOnly = true;
-            num3.readOnly = true;
+        if (firebase.auth().currentUser.metadata.creationTime === firebase.auth().currentUser.metadata.lastSignInTime) {
+            modal.style.display = "block"
         }
+        db.collection('users').doc(user.uid).get().then(doc=>{
+            if (!doc.data().numbers == [0,0,0]) {
+                num1.readOnly = true;
+                num2.readOnly = true;
+                num3.readOnly = true;
+                [num1.value, num2.value, num3.value] = doc.data().numbers
+            } else {
+                lockedNumbers = true
+            }
+            return null
+        }).catch(err=> {console.log("Error getting user data: ", err)})
+
         renderTable()
-        renderScoreBoard()
     } else {
         window.location = 'login.html'
     }
@@ -40,6 +46,17 @@ document.querySelector('header .sign-out-btn').addEventListener('click', () => {
       }).catch(function(error) {
         console.log('Error occured while signing out.')
       });
+})
+
+var modal = document.getElementById('info-modal');
+var infoBtn = document.querySelector('.info-btn')
+var infoClose = document.getElementById("info-modal-close")
+infoBtn.addEventListener('click', (e) => {modal.style.display = "block"})
+infoClose.addEventListener('click', (e) => {modal.style.display = "none"} ) 
+window.addEventListener('click', (e)=>{
+    if (e.target == modal) {
+        modal.style.display = "none"
+    }
 })
 
 var num1 = document.getElementById("num1");
@@ -84,7 +101,7 @@ function verifyNumber(number) {
     }
 }
 function submitNums() {
-    if (new Date().toJSON().slice(0,10) == localStorage.getItem('date')){
+    if (lockedNumbers){
         showError("You can only enter numbers once a day.")
     } else {
         if (verifyNumber(num1.value)) {
@@ -104,8 +121,7 @@ function submitNums() {
         })
         .then(function() {
             console.log("Document successfully written!");
-            localStorage.setItem("numbers", [parseInt(num1.value, 10),parseInt(num2.value, 10),parseInt(num3.value,10)])
-            localStorage.setItem("date", new Date().toJSON().slice(0,10))
+            lockedNumbers = true
             num1.readOnly = true;
             num2.readOnly = true;
             num3.readOnly = true;
@@ -116,87 +132,41 @@ function submitNums() {
     }
 }
 
-// Cloud Functions
-function countValues() {
-    numCount = new Array(21).fill(0)
-    db.collection("users").get().then(function(querySnapshot) {
-        querySnapshot.forEach(function(doc) {
-            console.log(doc.data().numbers)
-            numCount[doc.data().numbers[0]] ++
-            numCount[doc.data().numbers[1]] ++
-            numCount[doc.data().numbers[2]] ++
-        })
-        return numCount
-    }).then(numCount =>{        
-        pointsGiven = []
-        for (var i = 0; i < 21; i++){
-            numCount[i] ? pointsGiven.push(i/numCount[i]) : pointsGiven.push(0)
-        }
-        // console.log(pointsGiven)
-        db.collection("totals").doc(new Date().toJSON().slice(0,10)).set({
-            totals: numCount,
-            points: pointsGiven
-        })
-        // console.log(numCount)
-    })
-}
-function updateScores() {
-    db.collection("totals").doc(new Date().toJSON().slice(0,10)).get().then(function(doc) {
-        if (doc.exists) {
-            // console.log("Document data:", doc.data());
-            return doc.data().points
-        } else {
-            console.log("Document doesn't exist");
-        }
-    })
-    .then(points => {
-        db.collection("users").get().then(function(querySnapshot) {
-            querySnapshot.forEach(function(doc) {
-                points_to_add = points[doc.data().numbers[0]] + points[doc.data().numbers[1]] + points[doc.data().numbers[2]]
-                db.collection("users").doc(doc.id).update({
-                    numbers: [0,0,0],
-                    score: firebase.firestore.FieldValue.increment(points_to_add)
-                })
-            })
-        })
-    })
-    .catch(function(error) {
-        console.log("Error updating scores:", error);
-    });
-}
-function updateRanking() {
-    db.collection("users").orderBy("score","desc").limit(5).get()
-    .then(function(querySnapshot) {
-        rank = 0
-        querySnapshot.forEach(function(doc) {
-            rank++
-            db.collection("scores").doc("ranking").update({
-                [rank]: {score: doc.data().score, uid: doc.id, name: doc.data().name},
-            })
-        });
-    })
-    .catch(function(error) {
-        console.log("Error getting documents: ", error);
-    })
-}
-
-// User Functions
 function renderTable() {
     var s = ""
     db.collection("scores").doc("ranking").get().then(function(doc) {
         for (player in doc.data()) {
             if (player && doc.data()[player]){
                 s += `<tr><td>${player}</td><td>${doc.data()[player].name}</td><td>${doc.data()[player].score}</td></tr>`
-                console.log(player, doc.data()[player])
+                // console.log(player, doc.data()[player])
             }
         }
         return s
-    }).then(s => document.getElementById('rank-table-body').innerHTML = s)
-}
-function renderScoreBoard() {
-    db.collection("users").doc(firebase.auth().currentUser.uid).get()
-    .then((doc) => {
-        document.getElementById('total-pts').innerHTML=`<span class="pos-change">${doc.data().score}</span>`;
-        document.getElementById('rank-table-body').innerHTML += `<tr><td>You</td><td>${doc.data().name}</td><td>${doc.data().score}</td></tr>`
+    }).then(s => {document.getElementById('rank-table-body').innerHTML = s; return null})
+    .then(x => {
+        db.collection("users").doc(firebase.auth().currentUser.uid).get().then((doc) => {
+            document.getElementById('total-pts').innerHTML=`<span class="pos-change">${doc.data().score}</span>`;
+            document.getElementById('rank-table-body').innerHTML += `<tr><td>You</td><td>${doc.data().name}</td><td>${doc.data().score}</td></tr>`
+        })
     })
 }
+dayjs.extend(window.dayjs_plugin_timezone)
+dayjs.extend(window.dayjs_plugin_utc)
+function updateTimeTo() {
+    
+    var currentTime = dayjs.utc().startOf("minute").tz("America/New_York");
+    var remainderHour = (5 - currentTime.hour() % 6)
+    var remainderMin = (60 - currentTime.minute())
+    if (remainderMin == 60) {
+        remainderMin = 0;
+        remainderHour ++;
+    }
+    
+    var dateTime = dayjs(currentTime).add(remainderMin, "minutes").add(remainderHour, "hours").local().format("MMM DD, YYYY h:mm a");
+
+    document.getElementById('timeToScoreUpdate').innerHTML = (remainderHour ? (remainderHour + " hours and ") : "") + (remainderMin ? (remainderMin + " minutes ") : "")
+    document.getElementById('timeOfScoreUpdate').innerHTML = dateTime
+
+    setTimeout(updateTimeTo, 60000)
+}
+updateTimeTo()

@@ -15,9 +15,18 @@
         </div>
         <div class="info-btn">?</div>
     </header>
+    <div id="info-modal" class="modal">
+        <div class="modal-content">
+            <span id="info-modal-close">&times;</span>
+            <h3>How to Play</h3>
+            <p>Lorem ipsum dolor sit amet consectetur, adipisicing elit. Sapiente odit incidunt provident est blanditiis reiciendis neque voluptate ab animi nam.</p>
+            <h4>Time is in your local time zone</h4>
+        </div>
+    </div>
     <div class="container">
         <section class="pick-num">
             <h2>pick numbers from 1-20.</h2>
+            <p class="time-wrapper"><span id="timeToScoreUpdate"></span> till next score update at <span id="timeOfScoreUpdate"></span></p>
             <div id="error"></div>
             <div class="num-wrapper">
                 <div>
@@ -57,32 +66,32 @@
                 <tbody id="rank-table-body">
                     <tr>
                         <td>1</td>
-                        <td>Piranava</td>
+                        <td>Player One</td>
                         <td>103.45</td>
                     </tr>
                     <tr>
                         <td>2</td>
-                        <td>Ramanan</td>
+                        <td>Player Two</td>
                         <td>101.45</td>
                     </tr>
                     <tr>
                         <td>3</td>
-                        <td>Hello</td>
+                        <td>Player Three</td>
                         <td>91.54</td>
                     </tr>
                     <tr>
                         <td>4</td>
-                        <td>World</td>
+                        <td>Player Four</td>
                         <td>86.13</td>
                     </tr>
                     <tr>
                         <td>5</td>
-                        <td>Streak</td>
+                        <td>Player 5</td>
                         <td>72.15</td>
                     </tr>
                     <tr>
-                        <td></td>
-                        <td>Ramanan</td>
+                        <td>You</td>
+                        <td>Player 2</td>
                         <td>101.45</td>
                     </tr>
                 </tbody>
@@ -94,6 +103,9 @@
     <script src="https://www.gstatic.com/firebasejs/7.22.0/firebase-analytics.js"></script>
     <script src="https://www.gstatic.com/firebasejs/7.22.0/firebase-auth.js"></script>
     <script src="https://www.gstatic.com/firebasejs/7.22.0/firebase-firestore.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/dayjs/1.9.1/dayjs.min.js" integrity="sha512-u7elBfdMr+7LhU4rvUk3IM28QZDKTyUxba4Nx2IJ1W9cj4shfRSPq7EZXD2ULD9cBoizw2FQyeR6YBog6LcnHg==" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/dayjs/1.9.1/plugin/utc.min.js" integrity="sha512-+lztPB4upMyG9pLdOWl8MFsBhXM1V9vFTDhXV3/4VSdoqpR5RfA2bNdrl8n0F9HmbzFkNqmOBdZw580qfRU01Q==" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/dayjs/1.9.1/plugin/timezone.min.js" integrity="sha512-3QnyXIdU85C6rOXhHzVsXinI5/qM/LniMr5actNRUwyp1Tuurw7rOn7fX7WWoNyZuM7KlQxITGQI4ITCgXKGQA==" crossorigin="anonymous"></script>
     <script src="/app.js"></script>
 </body>
 </html>

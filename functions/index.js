@@ -44,7 +44,22 @@ exports.countValues = functions.https.onRequest((req,res) => {
             return ""
         })
         .catch(err => console.log("Error getting users",err))
-        return res.status(200).send("Updated sucessfully ")
+        return ""
+    })
+    .then(x => {
+        // eslint-disable-next-line promise/no-nesting
+        db.collection("users").orderBy("score", "desc").limit(5).get().then(snapshot => {
+            rank = 0
+            snapshot.forEach(doc => {
+                rank++
+                db.collection("scores").doc("ranking").update({
+                    [rank]: {score: doc.data().score, uid: doc.id, name: doc.data().name}
+                })
+            })
+            return res.status(200).send("Success getting rankings")
+        })
+        .catch(err => {console.log("Error getting rankings: ", err)})
+        return res.status(200).send("Updated sucessfully!")
     })
     .catch(err => {
         console.log('Error getting document', err)
@@ -52,40 +67,8 @@ exports.countValues = functions.https.onRequest((req,res) => {
     })
 })
 
-exports.updateRanking = functions.https.onRequest((req,res) => {
-    db.collection("users").orderBy("score", "desc").limit(5).get().then(snapshot => {
-        rank = 0
-        snapshot.forEach(doc => {
-            rank++
-            db.collection("scores").doc("ranking").update({
-                [rank]: {score: doc.data().score, uid: doc.id, name: doc.data().name}
-            })
-        })
-        return res.status(200).send("Success getting rankings")
-    })
-    .catch(err => {console.log("Error getting rankings: ", err)})
-})
-
-
-// Example Functions
-
-// // https://firebase.google.com/docs/functions/schedule-functions
-// exports.scheduledFunction = functions.pubsub.schedule('every 5 minutes').onRun((context) => {
-//     console.log("This will run every 5 minutes!");
-//     return null;
-// })
-// exports.scheduledFunctionCrontab = functions.pubsub.schedule('5 11 * * *')
+// exports.scheduledFunctionCrontab = functions.pubsub.schedule('0 */6 * * *')
 // .timeZone('America/New_York').onRun((context) => {
-//     console.log("This will be run every day at 11:05 AM Eastern!");
-//     return null;
-// })
-
-// // https://medium.com/codingthesmartway-com-blog/introduction-to-firebase-cloud-functions-c220613f0ef
-// exports.newUserCreated = functions.auth.user().onCreate(event => {
-//     console.log("User created: ", event.data.uid)
-//     return null;
-// })
-// exports.userDeleted = functions.auth.user().onDelete(event => {
-//     console.log("User deleted: ", event.data.uid)
+//     console.log("This will be run every 6 hours according to EST.");
 //     return null;
 // })
