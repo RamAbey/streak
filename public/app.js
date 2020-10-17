@@ -16,6 +16,7 @@ firebase.analytics();
 const auth = firebase.auth();
 const db = firebase.firestore()
 let lockedNumbers = false;
+let x,y,z;
 auth.onAuthStateChanged(user =>{
     // console.log("user info", user);
     if(user) {
@@ -23,12 +24,13 @@ auth.onAuthStateChanged(user =>{
             modal.style.display = "block"
         }
         db.collection('users').doc(user.uid).get().then(doc=>{
-            if (!doc.data().numbers == [0,0,0]) {
+            if (!(doc.data().numbers[0] == 0 && doc.data().numbers[1] == 0 && doc.data().numbers[2] == 0)) {
+                num1.value = doc.data().numbers[0];
+                num2.value = doc.data().numbers[1];
+                num3.value = doc.data().numbers[2];
                 num1.readOnly = true;
                 num2.readOnly = true;
                 num3.readOnly = true;
-                [num1.value, num2.value, num3.value] = doc.data().numbers
-            } else {
                 lockedNumbers = true
             }
             return null
@@ -153,7 +155,6 @@ function renderTable() {
 dayjs.extend(window.dayjs_plugin_timezone)
 dayjs.extend(window.dayjs_plugin_utc)
 function updateTimeTo() {
-    
     var currentTime = dayjs.utc().startOf("minute").tz("America/New_York");
     var remainderHour = (5 - currentTime.hour() % 6)
     var remainderMin = (60 - currentTime.minute())

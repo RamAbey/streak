@@ -26,7 +26,7 @@ exports.countValues = functions.https.onRequest((req,res) => {
         }
         return pointsGiven
     }).then(pointsGiven => {
-        db.collection("totals").doc(new Date().toJSON().slice(0,10)).set({
+        db.collection("totals").doc(new Date().toLocaleString()).set({
             totals: numCount,
             points: pointsGiven
         })
@@ -56,7 +56,7 @@ exports.countValues = functions.https.onRequest((req,res) => {
                     [rank]: {score: doc.data().score, uid: doc.id, name: doc.data().name}
                 })
             })
-            return res.status(200).send("Success getting rankings")
+            return null
         })
         .catch(err => {console.log("Error getting rankings: ", err)})
         return res.status(200).send("Updated sucessfully!")
@@ -70,5 +70,12 @@ exports.countValues = functions.https.onRequest((req,res) => {
 // exports.scheduledFunctionCrontab = functions.pubsub.schedule('0 */6 * * *')
 // .timeZone('America/New_York').onRun((context) => {
 //     console.log("This will be run every 6 hours according to EST.");
+//     console.log("Use this function to count and update values automatically.");
+//     return null;
+// })
+// exports.scheduledFunctionCrontab = functions.pubsub.schedule('0 0 1 * *')
+// .timeZone('America/New_York').onRun((context) => {
+//     console.log("This will be run at the start of every month at 0:00.");
+//     console.log("Use this function to reset all scores/numbers/rankings.");
 //     return null;
 // })
